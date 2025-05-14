@@ -96,13 +96,13 @@ export async function getCurrentUser(): Promise<User | null> {
 
     try {
         const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
-        const userRecord = await auth.getUser(decodedClaims.uid);
+        const userRecord = await db.collection('users').doc(decodedClaims.uid).get();
 
-        return {
-            uid: userRecord.uid,
-            email: userRecord.email,
-            name: userRecord.displayName,
+
+        if(!userRecord.exists) {
+            return null;
         }
+        
     } catch (error) {
         console.log('Error getting current user:', error);
         return null;
