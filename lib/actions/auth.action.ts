@@ -99,12 +99,21 @@ export async function getCurrentUser(): Promise<User | null> {
         const userRecord = await db.collection('users').doc(decodedClaims.uid).get();
 
 
-        if(!userRecord.exists) {
-            return null;
-        }
+        if(!userRecord.exists) return null;
+
+        return {
+            ...userRecord.data(),
+            id: userRecord.id,   
+        } as User;
         
     } catch (error) {
         console.log('Error getting current user:', error);
         return null;
     }
+}
+
+export async function isAuthenticated() {
+    const user = await getCurrentUser();
+
+    return !! user;
 }
